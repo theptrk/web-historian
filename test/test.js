@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
+var expect = require("chai").expect;
 var handler = require("../web/request-handler");
 var stubs = require("./stubs/stubs");
-var fs = require('fs');
+var fs = require("fs");
 var archive = require("../helpers/archive-helpers");
-var path = require('path');
+var path = require("path");
 var res;
 
 archive.initialize({

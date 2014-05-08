@@ -59,22 +59,16 @@ exports.addUrlToList = function(url, callback){
 };
 
 exports.isURLArchived = function(url, callback){
-  fs.exists(exports.paths.archivedSites + url, callback); // invokes callback with exists boolean
+  // fs.exists(exports.paths.archivedSites + url, callback); // invokes callback with exists boolean
+  fs.readFile(exports.paths.archivedSites + '/'+ url, function(err){
+    callback(!err); //
+  });
 };
 
-exports.grabUrl = function(url) {
-  // http.get(url, function(res) {
-  //   console.log(res.data);
-  //   res.on('data', function (chunk) {
-  //     console.log('BODY: ' + chunk);
-  //   });
-  //   console.log("Got response: " + res.statusCode);
-  // }).on('error', function(e) {
-  //   console.log("Got error: " + e.message);
-  // });
-
+exports.downloadUrl = function(url) {
+  // this is defining the get request to the external url
   var req = http.get(url, function(res) {
-    var body = ''
+    var body = '';
     res.on('data', function (partial) {
       //console.error('BODY')
       //console.log('BODY:' + partial);
@@ -98,16 +92,6 @@ exports.grabUrl = function(url) {
   });
 
 };
-
-exports.downloadUrl = function(url, callback){
-  http.get(url, function(res) {
-    console.log("Got response: " + res.statusCode);
-  }).on('error', function(e) {
-    console.log("Got error: " + e.message);
-  });
-  // chron job, regular job
-};
-
 
 
 

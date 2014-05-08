@@ -25,10 +25,55 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(callback){
+  var self = this;
+  var listOfUrls = [];
+  function readLines(input, func) {
+    var remaining = '';
+
+    input.on('data', function(data) {
+      remaining += data;
+      var index = remaining.indexOf('\n');
+      var last  = 0;
+      while (index > -1) {
+        var line = remaining.substring(last, index);
+        last = index + 1;
+        func(line);
+        index = remaining.indexOf('\n', last);
+      }
+
+      remaining = remaining.substring(last);
+    });
+
+    input.on('end', function() {
+      if (remaining.length > 0) {
+        func(remaining);
+      }
+      callback(listOfUrls);
+    });
+  }
+
+  function func(data) {
+    listOfUrls.push(data);
+  }
+
+  var input = fs.createReadStream(self.paths.list);
+  readLines(input, func);
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(url){
+  var self = this;
+
+  var findUrl = function(array) {
+    if(array.indexOf(url) === -1) {
+      console.log('F')
+      return false;
+    }
+    console.log('T')
+    return true;
+  };
+
+  self.readListOfUrls(findUrl);
 };
 
 exports.addUrlToList = function(){

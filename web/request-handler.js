@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var url = require('url');
 var archive = require('../helpers/archive-helpers');
-var serveAssets = require('./http-helpers').serveAssets
+var serveAssets = require('./http-helpers').serveAssets;
 // require more modules/folders here!
 
 exports.handleRequest = function (req, res) {
@@ -12,15 +12,16 @@ exports.handleRequest = function (req, res) {
   console.log('serving', method, 'for', pathname);
 
   if(pathname === '/') {
-    console.log('pathname is',pathname)
     serveAssets(res, archive.paths.siteAssets + '/index.html');
     //res.end(archive.paths.siteAssets + '/index.html');
+  }
+  else if (pathname === '/test') {
+    console.log(archive.isUrlInList('asdf'));
   }
   else {
     // default, if no predetermined path
     serveAssets(res, archive.paths.siteAssets + pathname);
   }
-
 
 };
 

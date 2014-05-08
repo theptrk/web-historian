@@ -1,6 +1,9 @@
+var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var urlParse = require('url').parse;
+
 var exports = exports;
 
 /*
@@ -11,6 +14,7 @@ var exports = exports;
  */
 
 exports.paths = {
+  'rootDir' : path.join(__dirname, '..'),
   'siteAssets' : path.join(__dirname, '../web/public'),
   'archivedSites' : path.join(__dirname, '../archives/sites'),
   'list' : path.join(__dirname, '../archives/sites.txt')
@@ -43,29 +47,78 @@ exports.isUrlInList = function(url, callback){
   });
 };
 
-exports.addUrlToList = function(url){
+exports.addUrlToList = function(url, callback){
   var text = '\n' + url;
   fs.appendFile(exports.paths.list, text, function (err) {
     if (err) {
       console.log(err);
+    } else {
+      callback(url); // this is not required
     }
-    console.log('The "data to append" was appended to file!');
   });
 };
 
 exports.isURLArchived = function(url, callback){
-  var self = this;
-  fs.exists(this.paths.archivedSites + '/' + url, function(exists) {
-    if(exists) {
-      console.log('isURLArchive says it exists')
-    } else {
-      console.log('isURLArchive says it doesnt exist - callback is commented')
-      //callback(url);
-    }
-  });
+  fs.exists(exports.paths.archivedSites + url, callback); // invokes callback with exists boolean
 };
 
-exports.downloadUrls = function(){
-  var self = this;
+exports.grabUrl = function(url) {
+  // http.get(url, function(res) {
+  //   console.log(res.data);
+  //   res.on('data', function (chunk) {
+  //     console.log('BODY: ' + chunk);
+  //   });
+  //   console.log("Got response: " + res.statusCode);
+  // }).on('error', function(e) {
+  //   console.log("Got error: " + e.message);
+  // });
+
+  var req = http.get(url, function(res) {
+    var body = ''
+    res.on('data', function (partial) {
+      //console.error('BODY')
+      //console.log('BODY:' + partial);
+      body += partial;
+    });
+    res.on('end', function(err){
+      var hostname = urlParse(url).hostname;
+      var pathname = '/' + hostname;
+      var newLocation = exports.paths.archivedSites + pathname + '.txt';
+      console.log(newLocation)
+      //console.error('full body')
+      //console.log(body)
+      fs.writeFile(newLocation, body, function(err){
+        if (err) {console.error('Write file error')}
+      });
+    })
+  });
+
+  req.on('error', function(e) {
+    console.log('problem with request: ' + e.message);
+  });
+
+};
+
+exports.downloadUrl = function(url, callback){
+  http.get(url, function(res) {
+    console.log("Got response: " + res.statusCode);
+  }).on('error', function(e) {
+    console.log("Got error: " + e.message);
+  });
   // chron job, regular job
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,15 +8,36 @@ var serveAssets = require('./http-helpers').serveAssets;
 exports.handleRequest = function (req, res) {
   var method = req.method;
   var pathname = url.parse(req.url).pathname;
-
+  var isArchivedSite = function(pathname) {
+    var first = url.parse(req.url).pathname.split('/')[1];
+    return (first === 'archives')
+  };
   console.log('serving', method, 'for', pathname);
 
   if(pathname === '/') {
     serveAssets(res, archive.paths.siteAssets + '/index.html');
     //res.end(archive.paths.siteAssets + '/index.html');
   }
-  else if (pathname === '/test') {
-    console.log(archive.isUrlInList('asdf'));
+  else if (pathname === '/testtrue') {
+    archive.isUrlInList('www.google.com', console.log);
+    //archive.isURLArchived('www.reedit.org');
+  }
+  else if (pathname === '/testfalse') {
+    archive.isUrlInList('www.googleadsf.com', console.log);
+    //archive.isURLArchived('www.reedit.org');
+  }
+  else if (pathname === '/addurl') {
+    archive.addUrlToList('www.bbc.ninja');
+  }
+  else if (pathname === '/addurl2') {
+    archive.addUrlToList('www.reedit.org');
+  }
+  else if (pathname === '/download') {
+    archive.grabUrl('http://www.bbc.com');
+  }
+  else if (isArchivedSite(pathname)) {
+    console.log("patrick")
+    serveAssets(res, archive.paths.rootDir + pathname);
   }
   else {
     // default, if no predetermined path

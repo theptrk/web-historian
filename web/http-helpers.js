@@ -14,12 +14,23 @@ exports.headers = headers = {
 
 exports.serveAssets = function(res, asset) {
   var data = '';
-  fs.readFile(asset, function(err, partial){
+  // searches public
+  fs.readFile(archive.paths.siteAssets + asset, function(err, partial){
     if(err) {
-      console.error(err);
+      // searched archives
+      fs.readFile(archive.paths.archivedSites + asset, function(err, partial) {
+        if(err) {
+          // else 404
+          console.error('404 not found!');
+        } else {
+          data += partial;
+          res.end(data);
+        }
+      });
+    } else {
+      data += partial;
+      res.end(data);
     }
-    data += partial;
-    res.end(data);
   });
 };
 
@@ -34,4 +45,12 @@ exports.getRequestData = function(req, callback) {
   req.on('end', function() {
     callback(body);
   });
+};
+
+exports.redirect = function (url, res) {
+  console.log('redirecting')
+  res.writeHead(302, {
+    'Location': url
+  });
+  res.end();
 };

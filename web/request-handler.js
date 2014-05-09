@@ -21,6 +21,27 @@ exports.handleRequest = function (req, res) {
       serveAssets(res, archive.paths.siteAssets + '/index.html');
       //res.end(archive.paths.siteAssets + '/index.html');
     }
+    else if (pathname === '/testtrue') {
+      //archive.isUrlInList('www.google.com', console.log);
+      archive.isUrlArchived('www.google.com', console.log);
+    }
+    else if (pathname === '/testfalse') {
+      //archive.isUrlInList('www.googleadsf.com', console.log);
+      archive.isUrlArchived('www.reedit.org', console.log);
+    }
+    else if (pathname === '/addurl') {
+      archive.addUrlToList('www.bbc.ninja');
+    }
+    else if (pathname === '/addurl2') {
+      archive.addUrlToList('www.reedit.org');
+    }
+    else if (pathname === '/download') {
+      archive.grabUrl('http://www.bbc.com');
+    }
+    else if (isArchivedSite(pathname)) {
+      console.log("patrick")
+      serveAssets(res, archive.paths.rootDir + pathname);
+    }
     else {
       // default, if no predetermined path
       serveAssets(res, archive.paths.siteAssets + pathname);

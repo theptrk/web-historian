@@ -68,28 +68,30 @@ exports.isUrlArchived = function(url, callback){
 
 exports.downloadUrls = function(list, callback) {
   callback = callback || console.log;
-  for (var i = 0; i < list.length - 1; i++) {
-    console.log('===');
-    console.log(list[i]);
-    (function(i){
-      http.get('http://'+list[i], function(res) {
-        var body = '';
-        res.on('data', function(partial){
-          body += partial;
-        });
-        res.on('end', function() {
-          console.log(exports.paths.archivedSites + '/' + list[i]);
-          fs.writeFile(exports.paths.archivedSites + '/' + list[i], body, function(err){
-            if(err) {
-              throw err;
-            } else {
-              console.log('wrote', list[i], '!!!');
-              callback('done');
-            }
+  for (var i = 0; i < list.length; i++) {
+    if(list[i]) {
+      console.log('===');
+      console.log(list[i]);
+      (function(i){
+        http.get('http://'+list[i], function(res) {
+          var body = '';
+          res.on('data', function(partial){
+            body += partial;
+          });
+          res.on('end', function() {
+            console.log(exports.paths.archivedSites + '/' + list[i]);
+            fs.writeFile(exports.paths.archivedSites + '/' + list[i], body, function(err){
+              if(err) {
+                throw err;
+              } else {
+                console.log('wrote', list[i], '!!!');
+                callback('done');
+              }
+            });
           });
         });
-      });
-    })(i);
+      })(i);
+    }
   }
 };
 

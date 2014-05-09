@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var urlParse = require('url').parse;
+var httpHeaders = require('../web/http-helpers').headers;
 
 var exports = exports;
 
@@ -58,48 +59,39 @@ exports.addUrlToList = function(url, callback){
   });
 };
 
-exports.isURLArchived = function(url, callback){
+exports.isUrlArchived = function(url, callback){
   // fs.exists(exports.paths.archivedSites + url, callback); // invokes callback with exists boolean
   fs.readFile(exports.paths.archivedSites + '/'+ url, function(err){
     callback(!err); //
   });
 };
 
-exports.downloadUrl = function(url) {
-  // this is defining the get request to the external url
-  var req = http.get(url, function(res) {
-    var body = '';
-    res.on('data', function (partial) {
-      //console.error('BODY')
-      //console.log('BODY:' + partial);
-      body += partial;
-    });
-    res.on('end', function(err){
-      var hostname = urlParse(url).hostname;
-      var pathname = '/' + hostname;
-      var newLocation = exports.paths.archivedSites + pathname + '.txt';
-      console.log(newLocation)
-      //console.error('full body')
-      //console.log(body)
-      fs.writeFile(newLocation, body, function(err){
-        if (err) {console.error('Write file error')}
+exports.downloadUrls = function(list, callback) {
+  callback = callback || console.log;
+  for (var i = 0; i < list.length - 1; i++) {
+    console.log('===');
+    console.log(list[i]);
+    (function(i){
+      http.get('http://'+list[i], function(res) {
+        var body = '';
+        res.on('data', function(partial){
+          body += partial;
+        });
+        res.on('end', function() {
+          console.log(exports.paths.archivedSites + '/' + list[i]);
+          fs.writeFile(exports.paths.archivedSites + '/' + list[i], body, function(err){
+            if(err) {
+              throw err;
+            } else {
+              console.log('wrote', list[i], '!!!');
+              callback('done');
+            }
+          });
+        });
       });
-    })
-  });
-
-  req.on('error', function(e) {
-    console.log('problem with request: ' + e.message);
-  });
-
+    })(i);
+  }
 };
-
-
-
-
-
-
-
-
 
 
 

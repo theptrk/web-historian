@@ -18,33 +18,12 @@ exports.handleRequest = function (req, res) {
 
   if(method === 'GET') {
     if(pathname === '/') {
-      serveAssets(res, archive.paths.siteAssets + '/index.html');
-      //res.end(archive.paths.siteAssets + '/index.html');
+      serveAssets(res, '/index.html');
     }
-    else if (pathname === '/testtrue') {
-      //archive.isUrlInList('www.google.com', console.log);
-      archive.isUrlArchived('www.google.com', console.log);
-    }
-    else if (pathname === '/testfalse') {
-      //archive.isUrlInList('www.googleadsf.com', console.log);
-      archive.isUrlArchived('www.reedit.org', console.log);
-    }
-    else if (pathname === '/addurl') {
-      archive.addUrlToList('www.bbc.ninja');
-    }
-    else if (pathname === '/addurl2') {
-      archive.addUrlToList('www.reedit.org');
-    }
-    else if (pathname === '/download') {
-      archive.grabUrl('http://www.bbc.com');
-    }
-    else if (isArchivedSite(pathname)) {
-      console.log("patrick")
-      serveAssets(res, archive.paths.rootDir + pathname);
-    }
+
     else {
       // default, if no predetermined path
-      serveAssets(res, archive.paths.siteAssets + pathname);
+      serveAssets(res, pathname);
     }
 
   } else if(method === 'POST') {
@@ -54,9 +33,3 @@ exports.handleRequest = function (req, res) {
   }
 
 };
-
-
-
-// 'siteAssets' : path.join(__dirname, '../web/public'),
-// 'archivedSites' : path.join(__dirname, '../archives/sites'),
-// 'list' : path.join(__dirname, '../archives/sites.txt')
